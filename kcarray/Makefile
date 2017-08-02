@@ -5,17 +5,17 @@ OUT=main
 
 all: build
 
-build: main.o vector.o
-	$(CC) $(CFLAGS) -o $(OUT) main.c vector.c
+build: main.o kcarray.o
+	$(CC) $(CFLAGS) -o $(OUT) main.c kcarray.c
 	$(RM) *.o
 
 debug: CFLAGS+=-DDEBUG_ON
 debug: build
 
-main.o: main.c vector.h
+main.o: main.c kcarray.h
 	$(CC) $(CFLAGS) -c main.c
 
-vector.o: vector.c vector.h
+vector.o: kcarray.c kcarray.h
 	$(CC) $(CFLAGS) -c vector.c
 
 clean:
