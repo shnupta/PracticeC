@@ -41,6 +41,7 @@ void darray_push(darray *vec, void *item) {
     // for now just push a value, do the resizing later
     if (vec->size == vec->capacity) {
         // resize the darray
+        darray_resize(vec, vec->capacity * 2);
     }
 
 
@@ -51,7 +52,7 @@ void darray_push(darray *vec, void *item) {
 void darray_insert(darray *vec, int index, void *item) {
     // same as above until resize function implemented
     if(vec->size == vec->capacity) {
-
+        darray_resize(vec, vec->capacity * 2);
     }  
 
     for (int i = vec->size - 1; i >= index; i--) {
@@ -69,6 +70,7 @@ void darray_prepend(darray *vec, void *item) {
 void* darray_pop(darray *vec) {
     if(vec->size <= vec->capacity / 4) {
         // half the capacity in resize
+        darray_resize(vec, vec->capacity / 2);
     }
 
     void *ret_val = *(vec->items + sizeof(void *) * (vec->size-1));
@@ -82,6 +84,7 @@ void* darray_pop(darray *vec) {
 void darray_delete(darray *vec, int index) {
     if(vec->size <= vec->capacity / 4) {
         // half the capacity in resize
+        darray_resize(vec, vec->capacity / 2);
     }
 
     *(vec->items + sizeof(void *) * index) = NULL;
@@ -102,7 +105,24 @@ void darray_remove(darray *vec, void *item) {
     }
 }
 
+int darray_find(darray *vec, void *item) {
+    for(int i = 0; i < vec->size; i++) {
+        if (*(vec->items + sizeof(void *) * i) == item) {
+            return i; 
+        }
+    }
 
+    return -1;
+}
+
+
+void darray_resize(darray *vec, int new_size) {
+    vec->capacity = new_size;
+    void **new_items = malloc(sizeof(void *) * vec->capacity);
+    new_items = vec->items;
+    free(vec->items);
+    vec->items = new_items;
+}
 
 
 

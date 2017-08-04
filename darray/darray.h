@@ -23,5 +23,8 @@ void darray_prepend(darray *, void *);
 void *darray_pop(darray*);
 void darray_delete(darray*, int);
 void darray_remove(darray*, void *);
+int darray_find(darray*, void *);
+void darray_resize(darray*, int);
+
 
 #endif 
