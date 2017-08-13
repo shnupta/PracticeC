@@ -60,3 +60,48 @@ void *list_pop_front(linkedlist *list)
 
 	return retval;
 }
+
+
+void list_push_back(linkedlist *list, void *value)
+{
+	listnode *node = malloc(sizeof(listnode *));
+	node->data = value;
+	node->next = NULL;
+	list->tail->next = node;
+	list->tail->next = node;
+	if(list->size == 0)
+	{
+		list->head->next = node;
+	}
+	list->size++;
+}
+
+void *list_pop_back(linkedlist *list)
+{
+	assert(list->size > 0);
+	void *retval = list->tail->next->data;
+	for(listnode *node = list->head->next; node->next != NULL; node = node->next)
+	{
+		if(node->next  == list->tail->next)
+		{
+			// we have the penultimate element
+			free(list->tail->next);
+			list->tail->next = node;
+			node->next = NULL;
+		}
+	}
+	list->size--;
+	return retval;
+}
+
+void *list_front(linkedlist *list)
+{
+	assert(list->size > 0);
+	return list->head->next->data;
+}
+
+void *list_back(linkedlist *list)
+{
+	assert(list->size > 0);
+	return list->tail->next->data;
+}
