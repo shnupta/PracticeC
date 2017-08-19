@@ -27,12 +27,13 @@ void *list_value_at(linkedlist *list, int index)
 {
 	assert(index >= 0 && index < list->size);
 	int cur = 0;
-	for (listnode *node = list->head->next; node->next != list->tail->next; node = node->next)
+	for (listnode *node = list->head->next; node->next != NULL; node = node->next)
 	{
 		if(cur == index)
 		{
 			return node->data;
 		}
+               cur++;
 	}	
 	return NULL;
 }
@@ -67,7 +68,7 @@ void list_push_back(linkedlist *list, void *value)
 	listnode *node = malloc(sizeof(listnode *));
 	node->data = value;
 	node->next = NULL;
-	list->tail->next = node;
+	list->tail->next->next = node;
 	list->tail->next = node;
 	if(list->size == 0)
 	{
@@ -104,4 +105,35 @@ void *list_back(linkedlist *list)
 {
 	assert(list->size > 0);
 	return list->tail->next->data;
+}
+
+void list_insert(linkedlist *list, int index, void *value)
+{
+        assert(index >= 0 && index < list->size);
+
+        if(index == 0) // first item
+        {
+                list_push_front(list, value);
+                return;
+        }
+        if(index == list->size) // add to end
+        {
+            list_push_back(list, value);
+            return;
+        }
+        listnode *node = malloc(sizeof(listnode *));
+        node->data = value;
+        int cur_index = 0;
+        for(listnode *cur = list->head->next; cur->next != NULL; cur = cur->next)
+        {
+                if (cur_index == index - 1)
+                {
+                        // here is where we need to reassign pointers
+                        node->next = cur->next;
+                        cur->next = node;
+                        return;
+                }
+                cur_index++;
+        }
+        list->size++;
 }
