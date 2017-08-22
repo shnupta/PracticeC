@@ -123,7 +123,7 @@ int darray_find(darray *vec, void *item) {
 
 
 void darray_resize(darray *vec, int new_size) {
-    assert(new_size >= vec->size)
+    assert(new_size >= vec->size);
     vec->capacity = new_size;
     void **new_items = malloc(sizeof(void *) * vec->capacity);
     new_items = vec->items;
