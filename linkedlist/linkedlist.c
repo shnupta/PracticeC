@@ -27,7 +27,7 @@ void *list_value_at(linkedlist *list, int index)
 {
 	assert(index >= 0 && index < list->size);
 	int cur = 0;
-	for (listnode *node = list->head->next; node->next != NULL; node = node->next)
+	for (listnode *node = list->head->next; node != NULL; node = node->next)
 	{
 		if(cur == index)
 		{
@@ -55,8 +55,9 @@ void *list_pop_front(linkedlist *list)
 {
 	assert(list->size > 0);
 	void *retval = list->head->next->data;
-	list->head->next = list->head->next->next;
+  listnode *next = list->head->next->next;
 	free(list->head->next);
+	list->head->next = next;
 	list->size--;
 
 	return retval;
@@ -124,7 +125,7 @@ void list_insert(linkedlist *list, int index, void *value)
         listnode *node = malloc(sizeof(listnode *));
         node->data = value;
         int cur_index = 0;
-        for(listnode *cur = list->head->next; cur->next != NULL; cur = cur->next)
+        for(listnode *cur = list->head->next; cur != NULL; cur = cur->next)
         {
                 if (cur_index == index - 1)
                 {
@@ -136,4 +137,35 @@ void list_insert(linkedlist *list, int index, void *value)
                 cur_index++;
         }
         list->size++;
+}
+
+
+void list_erase(linkedlist *list, int index)
+{
+        assert(index >= 0 && index < list->size);
+        if(index == 0)
+        {
+                list_pop_front(list);
+                return;
+        }
+        if(index == list->size - 1)
+        {
+                list_pop_back(list);
+                return;
+        }
+        // else we need to remove in the middle of the list
+        int cur = 0; 
+        listnode *prev;
+        for (listnode *node = list->head->next; node != NULL; node = node->next)
+        {
+                if(cur == index)
+                {
+                        prev->next = node->next;
+                        free(node);
+                        list->size--;
+                        return;
+                }
+                prev = node;
+                cur++;
+        }
 }
