@@ -169,3 +169,9 @@ void list_erase(linkedlist *list, int index)
                 cur++;
         }
 }
+
+
+void *list_value_n_from_end(linkedlist *list, int n)
+{
+
+}

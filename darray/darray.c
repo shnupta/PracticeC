@@ -132,5 +132,3 @@ void darray_resize(darray *vec, int new_size) {
 }
 
 
-
-
