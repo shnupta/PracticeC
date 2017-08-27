@@ -173,5 +173,41 @@ void list_erase(linkedlist *list, int index)
 
 void *list_value_n_from_end(linkedlist *list, int n)
 {
+        assert(n < list->size && n >= 0);
+        int diff = list->size - n - 1; // -1 because of zero based indexing
+        for (listnode *node = list->head->next; node != NULL; node = node->next)
+        {
+                if(diff == 0)
+                {
+                        // we are at n from end
+                        return node->data;
+                }
+                diff--;
+        }
+}
 
+void list_reverse(linkedlist *list)
+{
+        assert(list->size > 1);
+        list->tail->next = list->head->next;
+        list_reverse_please(list->head);
+
+        return;
+}
+
+void list_reverse_please(listnode *head)
+{
+        listnode *cur = head->next;
+        listnode *next = head->next;
+        listnode *prev = NULL;
+
+        while(cur != NULL)
+        {
+                next = cur->next;
+                cur->next = prev;
+                prev = cur;
+                cur = next;
+        }
+
+        head->next = prev;
 }
