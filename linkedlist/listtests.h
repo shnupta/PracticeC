@@ -13,8 +13,8 @@ void test_front(); //
 void test_back(); //
 void test_insert(); //
 void test_erase(); //
-void test_from_end();
-void test_reverse();
-void test_remove();
+void test_from_end(); //
+void test_reverse(); //
+void test_remove(); //
 
 #endif

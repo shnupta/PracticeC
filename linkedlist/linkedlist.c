@@ -7,8 +7,8 @@ void list_create(linkedlist *list)
 {
 	list->head = malloc(sizeof(listnode *));
 	list->tail = malloc(sizeof(listnode *));
-	list->head->next = NULL;
-	list->tail->next = NULL;
+	list->head = NULL;
+	list->tail = NULL;
 	list->size = 0;
 }
 
@@ -26,15 +26,14 @@ int list_is_empty(linkedlist *list)
 void *list_value_at(linkedlist *list, int index)
 {
 	assert(index >= 0 && index < list->size);
-	int cur = 0;
-	for (listnode *node = list->head->next; node != NULL; node = node->next)
-	{
-		if(cur == index)
-		{
-			return node->data;
-		}
-               cur++;
-	}	
+	int cur_index = 0;
+  listnode *cur = list->head;
+  while(cur)
+  {
+          if(cur_index == index) return cur->data;
+          cur_index++;
+          cur = cur->next;
+  }
 	return NULL;
 }
 
@@ -42,11 +41,11 @@ void list_push_front(linkedlist *list, void *value)
 {
 	listnode *node = malloc(sizeof(listnode *));
 	node->data = value;
-	node->next = list->head->next;
-	list->head->next = node;
+	node->next = list->head;
+	list->head = node;
 	if(list->size == 0)
 	{
-		list->tail->next = node;
+		list->tail = node;
 	}
 	list->size++;
 }
@@ -54,10 +53,10 @@ void list_push_front(linkedlist *list, void *value)
 void *list_pop_front(linkedlist *list)
 {
 	assert(list->size > 0);
-	void *retval = list->head->next->data;
-  listnode *next = list->head->next->next;
-	free(list->head->next);
-	list->head->next = next;
+	void *retval = list->head->data;
+  listnode *next = list->head->next;
+	free(list->head);
+	list->head = next;
 	list->size--;
 
 	return retval;
@@ -71,13 +70,13 @@ void list_push_back(linkedlist *list, void *value)
 	node->next = NULL;
 	if(list->size == 0)
 	{
-      list->tail->next = node;
-      list->head->next = node;
+      list->tail = node;
+      list->head = node;
 	}
   else
   {
-      list->tail->next->next = node;
       list->tail->next = node;
+      list->tail = node;
   }
 	list->size++;
 }
@@ -85,17 +84,21 @@ void list_push_back(linkedlist *list, void *value)
 void *list_pop_back(linkedlist *list)
 {
 	assert(list->size > 0);
-	void *retval = list->tail->next->data;
-	for(listnode *node = list->head->next; node != NULL; node = node->next)
-	{
-		if(node->next  == list->tail->next)
-		{
-			// we have the penultimate element
-			free(list->tail->next);
-			list->tail->next = node;
-			node->next = NULL;
-		}
-	}
+	void *retval = list->tail->data;
+
+  listnode *cur = list->head;
+  listnode *prev = NULL;
+  while(cur)
+  {
+          if(cur == list->tail) 
+          {
+                  free(list->tail);
+                  list->tail = prev;
+                  prev->next = NULL;
+          }
+          prev = cur;
+          cur = cur->next;
+  }
 	list->size--;
 	return retval;
 }
@@ -103,13 +106,13 @@ void *list_pop_back(linkedlist *list)
 void *list_front(linkedlist *list)
 {
 	assert(list->size > 0);
-	return list->head->next->data;
+	return list->head->data;
 }
 
 void *list_back(linkedlist *list)
 {
 	assert(list->size > 0);
-	return list->tail->next->data;
+	return list->tail->data;
 }
 
 void list_insert(linkedlist *list, int index, void *value)
@@ -129,17 +132,20 @@ void list_insert(linkedlist *list, int index, void *value)
         listnode *node = malloc(sizeof(listnode *));
         node->data = value;
         int cur_index = 0;
-        for(listnode *cur = list->head->next; cur != NULL; cur = cur->next)
+        listnode *cur = list->head;
+        listnode *prev = NULL;
+        while(cur)
         {
-                if (cur_index == index - 1)
+                if(cur_index == index)
                 {
-                        // here is where we need to reassign pointers
-                        node->next = cur->next;
-                        cur->next = node;
+                        node->next = prev->next;
+                        prev->next = node;
                         list->size++;
                         return;
                 }
                 cur_index++;
+                prev = cur;
+                cur = cur->next;
         }
 }
 
@@ -158,19 +164,20 @@ void list_erase(linkedlist *list, int index)
                 return;
         }
         // else we need to remove in the middle of the list
-        int cur = 0; 
-        listnode *prev;
-        for (listnode *node = list->head->next; node != NULL; node = node->next)
+        int cur_index = 0; 
+        listnode *prev = NULL;
+        listnode *cur = list->head;
+        while(cur)
         {
-                if(cur == index)
+                if(cur_index == index)
                 {
-                        prev->next = node->next;
-                        free(node);
+                        prev->next = cur->next;
+                        free(cur);
                         list->size--;
                         return;
                 }
-                prev = node;
-                cur++;
+                cur_index++;
+                cur = cur->next;
         }
 }
 
@@ -179,34 +186,25 @@ void *list_value_n_from_end(linkedlist *list, int n)
 {
         assert(n < list->size && n >= 0);
         int diff = list->size - n - 1; // -1 because of zero based indexing
-        for (listnode *node = list->head->next; node != NULL; node = node->next)
+        listnode *cur = list->head;
+        while(cur)
         {
-                if(diff == 0)
-                {
-                        // we are at n from end
-                        return node->data;
-                }
+                if(diff == 0) return cur->data;
                 diff--;
+                cur = cur->next;
         }
 }
 
 void list_reverse(linkedlist *list)
 {
         assert(list->size > 1);
-        list->tail->next = list->head->next;
-        list_reverse_please(list->head);
+        list->tail = list->head;
 
-        return;
-}
-
-// taken from jwasham
-void list_reverse_please(listnode *head)
-{
-        listnode *cur = head->next;
-        listnode *next = head->next;
+        listnode *cur = list->head;
+        listnode *next = list->head;
         listnode *prev = NULL;
 
-        while(cur != NULL)
+        while(cur)
         {
                 next = cur->next;
                 cur->next = prev;
@@ -214,43 +212,39 @@ void list_reverse_please(listnode *head)
                 cur = next;
         }
 
-        head->next = prev;
-}
+        list->head = prev;
 
+
+        return;
+}
 
 void list_remove(linkedlist *list, void *item)
 {
         listnode *prev = NULL;
-        for(listnode *node = list->head->next; node != NULL; node = node->next)
+        listnode *cur = list->head;
+        while(cur)
         {
-                if(node->data == item)
+                if(cur->data == item)
                 {
-                        if(prev != NULL)
-                        {
-                                prev->next = node->next;
-                        }
-                        else
-                        {
-                                list->head->next = node->next;
-                        }
+                        if(prev) prev->next = cur->next;
+                        else list->head = cur->next;
 
-                        if(list->tail->next == node) // correct tail if needed
-                        {
-                                list->tail->next = prev;
-                        }
-                        free(node);
+                        if(list->tail == cur) list->tail = prev;
+
+                        free(cur);
                         list->size--;
                         return;
                 }
-                prev = node;
+                prev = cur;
+                cur = cur->next;
         }
 }
 
 void list_destroy(linkedlist *list)
 {
-        listnode *cur = list->head->next;
+        listnode *cur = list->head;
 
-        while(cur != NULL)
+        while(cur)
         {
                 listnode *next = cur->next;
                 free(cur);
