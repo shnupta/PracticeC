@@ -15,7 +15,7 @@ debug: build
 main.o: main.c darray.h
 	$(CC) $(CFLAGS) -c main.c
 
-vector.o: darray.c darray.h
+darray.o: darray.c darray.h
 	$(CC) $(CFLAGS) -c darray.c
 
 clean:

@@ -26,11 +26,10 @@ void *list_front(linkedlist *); //
 void *list_back(linkedlist *); //
 void list_insert(linkedlist *, int, void *); //
 void list_erase(linkedlist *, int); //
-void *list_value_n_from_end(linkedlist *, int);
-void list_reverse(linkedlist *);
-void list_reverse_please(listnode *);
-void list_remove(linkedlist *, void *);
-void list_clear(linkedlist *);
-void list_destroy(linkedlist *);
+void *list_value_n_from_end(linkedlist *, int); //
+void list_reverse(linkedlist *); //
+void list_reverse_please(listnode *); //
+void list_remove(linkedlist *, void *); //
+void list_destroy(linkedlist *); //
 
 #endif

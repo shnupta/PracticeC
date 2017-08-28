@@ -69,12 +69,16 @@ void list_push_back(linkedlist *list, void *value)
 	listnode *node = malloc(sizeof(listnode *));
 	node->data = value;
 	node->next = NULL;
-	list->tail->next->next = node;
-	list->tail->next = node;
 	if(list->size == 0)
 	{
-		list->head->next = node;
+      list->tail->next = node;
+      list->head->next = node;
 	}
+  else
+  {
+      list->tail->next->next = node;
+      list->tail->next = node;
+  }
 	list->size++;
 }
 
@@ -82,7 +86,7 @@ void *list_pop_back(linkedlist *list)
 {
 	assert(list->size > 0);
 	void *retval = list->tail->next->data;
-	for(listnode *node = list->head->next; node->next != NULL; node = node->next)
+	for(listnode *node = list->head->next; node != NULL; node = node->next)
 	{
 		if(node->next  == list->tail->next)
 		{
@@ -132,11 +136,11 @@ void list_insert(linkedlist *list, int index, void *value)
                         // here is where we need to reassign pointers
                         node->next = cur->next;
                         cur->next = node;
+                        list->size++;
                         return;
                 }
                 cur_index++;
         }
-        list->size++;
 }
 
 
@@ -195,6 +199,7 @@ void list_reverse(linkedlist *list)
         return;
 }
 
+// taken from jwasham
 void list_reverse_please(listnode *head)
 {
         listnode *cur = head->next;
@@ -210,4 +215,45 @@ void list_reverse_please(listnode *head)
         }
 
         head->next = prev;
+}
+
+
+void list_remove(linkedlist *list, void *item)
+{
+        listnode *prev = NULL;
+        for(listnode *node = list->head->next; node != NULL; node = node->next)
+        {
+                if(node->data == item)
+                {
+                        if(prev != NULL)
+                        {
+                                prev->next = node->next;
+                        }
+                        else
+                        {
+                                list->head->next = node->next;
+                        }
+
+                        if(list->tail->next == node) // correct tail if needed
+                        {
+                                list->tail->next = prev;
+                        }
+                        free(node);
+                        list->size--;
+                        return;
+                }
+                prev = node;
+        }
+}
+
+void list_destroy(linkedlist *list)
+{
+        listnode *cur = list->head->next;
+
+        while(cur != NULL)
+        {
+                listnode *next = cur->next;
+                free(cur);
+                cur = next;
+        }
 }
