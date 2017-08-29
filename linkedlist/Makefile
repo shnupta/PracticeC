@@ -9,7 +9,6 @@ all: build
 build: main.o linkedlist.o listtests.o
 	$(CC) $(CFLAGS) -o $(OUT) main.c linkedlist.c listtests.c
 	$(RM) *.o
-
 debug: CFLAGS+=-DDEBUG_ON
 debug: build
 

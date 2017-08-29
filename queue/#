@@ -1,0 +1,23 @@
+#include "queuetests.h"
+#include "queue.h"
+
+#include <assert.h>
+
+void run_all_tests()
+{
+    test_enqueue();
+    //test_dequeue();
+    //test_empty();
+}
+
+void test_enqueue()
+{
+    queue q;
+    create_queue(&q);
+
+    enqueue(q, 1);
+
+    //assert(q->list->head->data == 1);
+
+    //destroy_queue(q);
+}
