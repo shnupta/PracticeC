@@ -10,12 +10,13 @@ typedef struct bst_node
 } bst_node;
 
 bst_node* create_node(int);
-void insert(bst_node*, int);
+bst_node* insert(bst_node*, int);
 int get_node_count(bst_node*);
 void print_values(bst_node*); // from min to max
 void delete_tree(bst_node*);
 int is_in_tree(bst_node*, int);
 int get_height(bst_node*);
+int max(int, int);
 int get_min(bst_node*);
 int get_max(bst_node*);
 int is_binary_search_tree(bst_node*);
