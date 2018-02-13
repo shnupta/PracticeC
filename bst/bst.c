@@ -83,35 +83,63 @@ int get_min(bst_node* root)
 int get_max(bst_node* root)
 {
 	if(root == 0) return -1;
-	while(root->left != 0) root = root->left;
+	while(root->right != 0) root = root->right;
 	return root->value;
 }
 
 int is_binary_search_tree(bst_node* root)
 {
-	if(root == 0) return 1;
-	int temp;
-	if (root->left->value < root->value && root->value < root->right->value) temp = 1;
-	else temp = 0;
+  int temp = 0;;
+  if(root->left == 0 && root->right == 0) return 1; // a leaf is a valid bst
+  if(root->left == 0)
+  {
+    if(get_min(root->right) > root->value) temp = 1;
+  }
+  else if(root->right == 0)
+  {
+    if(get_max(root->left) < root->value) temp = 1;
+  }
+  else
+  {
+    if(get_max(root->left) < root->value && get_min(root->right) > root->value) temp = 1;
+  }
 
 	return (temp && is_binary_search_tree(root->left) && is_binary_search_tree(root->right));
 }
 
-void delete_value(bst_node* root, int value)
+bst_node* delete_value(bst_node* root, int value)
 {
-	if(root == 0) return;
+	if(root == 0) return root;
 
-	if(value < root->value) return delete_value(root->left, value);
-	else if(value > root->value) return delete_value(root->right, value);
-	else
+	if(value < root->value) root->left = delete_value(root->left, value);
+	else if(value > root->value) root->right = delete_value(root->right, value);
+	else // found the node we want to delete
 	{
-	
-		if(root->left == 0 && root->right == 0) free(root);	
+		if(root->left == 0 && root->right == 0) free(root);
 		else if(root->left == 0)
 		{
-			// this node has a right sub-tree
-			*root = *root->right;
+			// this node has a right sub-tree only
+      bst_node* temp = root;
+      root = root->right;
+      free(temp);
 		}
+    else if(root->right == 0)
+    {
+      // this node has a left subtree only
+      bst_node* temp = root;
+      root = root->left;
+      free(temp);
+    }
+    else
+    {
+      // it has both a left and right subtree
+      bst_node* temp = root;
+      int replacement = get_min(root->right);
+      root->value = replacement;
+      root->right = delete_value(root->right, replacement);
+      free(temp);
+    }
 	}
-	
+
+  return root;
 }

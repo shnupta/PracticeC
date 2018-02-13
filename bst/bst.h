@@ -20,5 +20,5 @@ int max(int, int);
 int get_min(bst_node*);
 int get_max(bst_node*);
 int is_binary_search_tree(bst_node*);
-void delete_value(bst_node*, int);
+bst_node* delete_value(bst_node*, int);
 int get_successor(bst_node*, int); // returns next-highest value in tree after value, -1 if none
