@@ -57,6 +57,8 @@ int is_in_tree(bst_node* root, int value)
 	if(root->value == value) return 1;
 	else if(value < root->value) return is_in_tree(root->left, value);
 	else if(value > root->value) return is_in_tree(root->right, value);
+
+  return -1;
 }
 
 
@@ -115,12 +117,17 @@ bst_node* delete_value(bst_node* root, int value)
 	else if(value > root->value) root->right = delete_value(root->right, value);
 	else // found the node we want to delete
 	{
-		if(root->left == 0 && root->right == 0) free(root);
+		if(root->left == 0 && root->right == 0)
+    {
+      root = 0;
+      free(root);
+    }
 		else if(root->left == 0)
 		{
 			// this node has a right sub-tree only
       bst_node* temp = root;
       root = root->right;
+      temp = 0;
       free(temp);
 		}
     else if(root->right == 0)
@@ -128,18 +135,52 @@ bst_node* delete_value(bst_node* root, int value)
       // this node has a left subtree only
       bst_node* temp = root;
       root = root->left;
+      temp = 0;
       free(temp);
     }
     else
     {
       // it has both a left and right subtree
-      bst_node* temp = root;
       int replacement = get_min(root->right);
       root->value = replacement;
       root->right = delete_value(root->right, replacement);
-      free(temp);
     }
 	}
 
   return root;
+}
+
+
+int get_successor(bst_node* root, int value)
+{
+  if(root == 0) return -1;
+
+  bst_node* target = root;
+  while (target->value != value) {
+    if (value < target->value) {
+      target = target->left;
+    } else if (value > target->value) {
+      target = target->right;
+    }
+  }
+
+  // arrived at target node
+  if (target->right != NULL) {
+    // get min value of right subtree
+    return get_min(target->right);
+  } else {
+    // get lowest ancestor that is a left child in the path to target value
+    bst_node* successor = NULL;
+    bst_node* ancestor = root;
+    while (ancestor != NULL) {
+      if (value < ancestor->value) {
+        successor = ancestor;
+        ancestor = ancestor->left;
+      } else {
+        ancestor = ancestor->right;
+      }
+    }
+
+    return successor->value;
+  }
 }
